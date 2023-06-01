@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="test.css" />
+  <title>chatApp</title>
+</head>
+  
+
+<body>
+  <h1>Cat Chat</h1>
+  <!-- メッセージ入力箇所 -->
+<form>
+      
+<!-- クレアの会話 -->
+
+<div class="balloon-012">
+    <p>クレア</p>
+    <div class="balloon-012__section">
+        <img class="balloon-012__img" src="img/claire.jpeg" alt="" width="45" height="45"
+             loading="lazy" decoding="async"/>
+        <div class="balloon-012__p left"><input type="text" id="name"></div>
+<!-- 送信ボタン -->
+      <div>
+        <button type="button" id="send">
+          <img src="img/airplane.png" alt="" width="30" height="30" >
+        </button>
+      </div>
+          </div>
+
+
+ <!-- モネの会話 -->
+    <div style="text-align: right">
+      <p>モネ</p>
+    </div>
+    <div class="balloon-012__section">
+
+        <div class="balloon-012__p right"><input type="text" id="text"></div>
+              <img class="balloon-012__img" src="img/mone.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
+   
+              <!-- 送信ボタン -->
+      <div style="text-align: right">
+        <button type="button" id="send">
+          <img src="img/airplane.png" alt="" width="30" height="30" >
+        </button>
+      </div>
+      </div>
+
+      
+      </form>
+
+
+
+  <!-- データ出力場所 -->
+  <ul id="output"></ul>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+    // 日時をいい感じの形式にする関数
+    function convertTimestampToDatetime(timestamp) {
+      const _d = timestamp ? new Date(timestamp * 1000) : new Date();
+      const Y = _d.getFullYear();
+      const m = (_d.getMonth() + 1).toString().padStart(2, '0');
+      const d = _d.getDate().toString().padStart(2, '0');
+      const H = _d.getHours().toString().padStart(2, '0');
+      const i = _d.getMinutes().toString().padStart(2, '0');
+      const s = _d.getSeconds().toString().padStart(2, '0');
+      return `${Y}/${m}/${d} ${H}:${i}:${s}`;
+    }
+  </script>
+  <!-- 以下にfirebaseのコードを貼り付けよう -->
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    import {
+  getFirestore,
+  collection,
+  addDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDC00kvN4NgVjNO-zGZvYW1Sr9LN_DMShs",
+      authDomain: "f06-kadota.firebaseapp.com",
+      projectId: "f06-kadota",
+      storageBucket: "f06-kadota.appspot.com",
+      messagingSenderId: "521984845465",
+      appId: "1:521984845465:web:2c083ff180f0539346ba08"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+     // 送信時に必要な処理
+    $("#send").on("click", function () {
+      const postData = {
+  name: $("#name").val(),
+  text: $("#text").val(),
+  time: serverTimestamp(),
+};
+addDoc(collection(db, "chat"), postData);
+$("#text").val("");
+});
+
+
+
+// データ取得処理
+onSnapshot(collection(db, "chat"), (querySnapshot) => {
+  console.log(querySnapshot.docs);
+
+
+// データ取得条件の指定（今回は時間の新しい順に並び替えて取得）
+const q = query(collection(db, "chat"), orderBy("time", "desc"));
+
+onSnapshot(q, (querySnapshot) => {
+
+  const documents = [];
+querySnapshot.docs.forEach(function (doc) {
+  const document = {
+    id: doc.id,
+    data: doc.data(),
+  };
+  documents.push(document);
+});
+
+console.log(documents);
+
+const htmlElements = [];
+documents.forEach(function (document) {
+  htmlElements.push(`
+    <li id="${document.id}">
+      <p>${
+        document.data.name
+      } at ${convertTimestampToDatetime(document.data.time.seconds)}</p> 
+      <p>${document.data.text}</p>
+    </li>
+  `);
+});
+
+$("#output").html(htmlElements);
+});
+
+});
+
+  </script>
+
+</body>
+
+</html>
