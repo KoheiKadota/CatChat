@@ -22,7 +22,7 @@
     <div class="balloon-012__section">
         <img class="balloon-012__img" src="img/claire.jpeg" alt="" width="45" height="45"
              loading="lazy" decoding="async"/>
-        <div class="balloon-012__p left"><input type="text" id="name"></div>
+        <div class="balloon-012__p left"><input type="text" id="text"></div>
 <!-- 送信ボタン -->
       <div>
         <button type="button" id="send">
@@ -38,12 +38,12 @@
     </div>
     <div class="balloon-012__section">
 
-        <div class="balloon-012__p right"><input type="text" id="text"></div>
+        <div class="balloon-012__p right"><input type="text" id="text2"></div>
               <img class="balloon-012__img" src="img/mone.jpeg" alt="" width="45" height="45" loading="lazy" decoding="async" />
    
               <!-- 送信ボタン -->
       <div style="text-align: right">
-        <button type="button" id="send">
+        <button type="button" id="send_2">
           <img src="img/airplane.png" alt="" width="30" height="30" >
         </button>
       </div>
@@ -56,7 +56,10 @@
 
   <!-- データ出力場所 -->
   <ul id="output"></ul>
+ <ul id="output_2"></ul>
 
+
+  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script>
     // 日時をいい感じの形式にする関数
@@ -103,16 +106,25 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-     // 送信時に必要な処理
+     // 送信時に必要な処理（クレア猫）
     $("#send").on("click", function () {
       const postData = {
-  name: $("#name").val(),
   text: $("#text").val(),
   time: serverTimestamp(),
 };
 addDoc(collection(db, "chat"), postData);
 $("#text").val("");
 });
+
+      // 送信時に必要な処理（モネ猫）
+      $("#send_2").on("click", function () {
+        const postData = {
+          text: $("#text2").val(),
+          time: serverTimestamp(),
+        };
+        addDoc(collection(db, "chat"), postData);
+        $("#text2").val("");
+      });
 
 
 
@@ -150,12 +162,35 @@ documents.forEach(function (document) {
 });
 
 $("#output").html(htmlElements);
+$("#output_2").html(htmlElements);
 });
 
 });
 
   </script>
 
-</body>
+<!-- 出力結果を非表示にする、表示にする -->
+
+<!-- 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $("#send").click(function () {
+        var outputId = $(this).data("output");
+        $("output").hide();
+        $("output_2").show();
+      });
+    });
+        $(document).ready(function () {
+            $("#send_2").click(function () {
+              var outputId = $(this).data("output_2");
+              $("output_2").hide();
+              $("output").show();
+            });
+          }); -->
+
+  </script>
+
+
 
 </html>

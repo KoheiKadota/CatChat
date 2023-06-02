@@ -56,3 +56,11 @@
     border-radius: 0 0 15px 0;
     box-shadow: 3px -15px 0 -7px #30e852 inset;
 }
+
+li{
+    list-style: none;
+}
+
+#output_2{
+text-align: right;
+}
